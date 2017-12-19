@@ -65,7 +65,9 @@ export default class Operations extends React.Component {
           {
             taggedOps.map( (tagObj, tag) => {
               let operations = tagObj.get("operations")
-              let tagDescription = tagObj.getIn(["tagDetails", "description"], null)
+              let tagDescription = tagObj.getIn(["tagDetails", "description"], null) || ""
+              let tagDescriptionTitle = !tagDescription ? null : tagDescription.split('\n')[0]
+              let tagDescriptionBody = !tagDescription ? null : tagDescription.split('\n').slice(1).join("\n")
               let tagExternalDocsDescription = tagObj.getIn(["tagDetails", "externalDocs", "description"])
               let tagExternalDocsUrl = tagObj.getIn(["tagDetails", "externalDocs", "url"])
 
@@ -85,9 +87,9 @@ export default class Operations extends React.Component {
                       href= {isDeepLinkingEnabled ? `#/${tag}` : null}>
                       <span>{tag}</span>
                     </a>
-                    { !tagDescription ? null :
+                    { !tagDescriptionTitle ? null :
                         <small>
-                          <Markdown source={tagDescription} />
+                          <Markdown source={tagDescriptionTitle} />
                         </small>
                     }
 
@@ -113,8 +115,11 @@ export default class Operations extends React.Component {
                       </svg>
                     </button>
                   </h4>
-
                   <Collapse isOpened={showTag}>
+                    <div className="extraDescription">
+                        <Markdown source={tagDescriptionBody} />
+                    </div>
+
                     {
                       operations.map( op => {
                         const path = op.get("path")
